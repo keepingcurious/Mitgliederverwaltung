@@ -15,6 +15,8 @@ find_package(nlohmann_json REQUIRED)
 set(SOURCE_FILES
         src/Fanclub.cpp
         main.cpp
+        spiele.cpp
+        spiele.hpp
 )
 
 add_executable(Fanclub ${SOURCE_FILES})

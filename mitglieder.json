@@ -1,62 +1,62 @@
 [
-  {
-    "vorname": "Anna",
-    "nachname": "Müller",
-    "geburtstag": "1985-06-05",
-    "anschrift": "Musterstraße 123",
-    "plz": 12345,
-    "ort": "Berlin",
-    "telephon": "+49 170 1234567",
-    "email": "anna.mueller@example.com",
-    "eintritt": "2010-01-01",
-    "score": 87
-  },
-  {
-    "vorname": "Bernd",
-    "nachname": "Schmidt",
-    "geburtstag": "1975-04-12",
-    "anschrift": "Bergstraße 32",
-    "plz": 67890,
-    "ort": "München",
-    "telephon": "+49 151 2345678",
-    "email": "bernd.schmidt@example.com",
-    "eintritt": "2012-05-05",
-    "score": 65
-  },
-  {
-    "vorname": "Clemens",
-    "nachname": "Weiß",
-    "geburtstag": "1990-08-25",
-    "anschrift": "Lindenstraße 45",
-    "plz": 34567,
-    "ort": "Hamburg",
-    "telephon": "+49 160 3456789",
-    "email": "clemens.weiss@example.com",
-    "eintritt": "2015-03-15",
-    "score": 73
-  },
-  {
-    "vorname": "Doris",
-    "nachname": "Fischer",
-    "geburtstag": "1988-11-18",
-    "anschrift": "Rosengasse 23",
-    "plz": 56789,
-    "ort": "Frankfurt",
-    "telephon": "+49 177 4567890",
-    "email": "doris.fischer@example.com",
-    "eintritt": "2013-06-10",
-    "score": 92
-  },
-  {
-    "vorname": "Eva",
-    "nachname": "Schneider",
-    "geburtstag": "1978-02-28",
-    "anschrift": "Sonnenallee 78",
-    "plz": 45678,
-    "ort": "Dresden",
-    "telephon": "+49 173 5678901",
-    "email": "eva.schneider@example.com",
-    "eintritt": "2011-02-02",
-    "score": 81
-  }
+    {
+        "vorname": "Anna",
+        "nachname": "Müller",
+        "geburtstag": "",
+        "anschrift": "Musterstraße 123",
+        "plz": 12345,
+        "ort": "Berlin",
+        "telephon": "+49 170 1234567",
+        "email": "anna.mueller@example.com",
+        "score": 87,
+        "mitgliedsnummer": 8934
+    },
+    {
+        "vorname": "Bernd",
+        "nachname": "Schmidt",
+        "geburtstag": "",
+        "anschrift": "Bergstraße 32",
+        "plz": 67890,
+        "ort": "München",
+        "telephon": "+49 151 2345678",
+        "email": "bernd.schmidt@example.com",
+        "score": 65,
+        "mitgliedsnummer": 893
+    },
+    {
+        "vorname": "Clemens",
+        "nachname": "Weiß",
+        "geburtstag": "",
+        "anschrift": "Lindenstraße 45",
+        "plz": 34567,
+        "ort": "Hamburg",
+        "telephon": "+49 160 3456789",
+        "email": "clemens.weiss@example.com",
+        "score": 73,
+        "mitgliedsnummer": 8944
+    },
+    {
+        "vorname": "Doris",
+        "nachname": "Fischer",
+        "geburtstag": "",
+        "anschrift": "Rosengasse 23",
+        "plz": 56789,
+        "ort": "Frankfurt",
+        "telephon": "+49 177 4567890",
+        "email": "doris.fischer@example.com",
+        "score": 92,
+        "mitgliedsnummer": 5455
+    },
+    {
+        "vorname": "Eva",
+        "nachname": "Schneider",
+        "geburtstag": "",
+        "anschrift": "Sonnenallee 78",
+        "plz": 45678,
+        "ort": "Dresden",
+        "telephon": "+49 173 5678901",
+        "email": "eva.schneider@example.com",
+        "score": 81,
+        "mitgliedsnummer": 55
+    }
 ]

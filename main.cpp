@@ -2,30 +2,38 @@
 #include <fstream>
 #include "fanclub.hpp"
 #include "nlohmann/json.hpp"
+#include "spiele.hpp"
 
 using json = nlohmann::json;
 
-// TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 int main() {
     const std::string dateipfad = "/Users/johannes/repos/Mitgliederverwaltung/mitglieder.json";
-    try {
-        // Datei zum Lesen öffnen
-        std::ifstream eingabedatei(dateipfad);
-        if (!eingabedatei.is_open()) {
-            throw std::runtime_error("Konnte die Datei nicht öffnen. Existiert sie bereits?");
-        }
+    json mitgliederJson = openFile(dateipfad);
+    std::vector<Mitglied> mitglieder;
+    mitglieder = mitgliederEinlesen(mitgliederJson);
 
-        // JSON-Daten einlesen
-        json j;
-        eingabedatei >> j;
-        std::cout << j.dump(4) << std::endl;
+    mitgliederSchreiben(mitglieder, dateipfad);
 
 
-    } catch (const json::parse_error& e) {
-        std::cerr << "JSON-Formatierungsfehler: " << e.what() << "\n";
-    } catch (const std::exception& e) {
-        std::cerr << "Fehler beim Lesen: " << e.what() << "\n";
-    }
+    const std::string dateipfadSpieleBuli = "/Users/johannes/repos/Mitgliederverwaltung/spieleBuli.json";
+    const std::string dateipfadSpieleDfb = "/Users/johannes/repos/Mitgliederverwaltung/spieleDfb.json";
+    const std::string dateipfadSpieleUcl = "/Users/johannes/repos/Mitgliederverwaltung/spieleUcl.json";
+
+    /*// 1. Datei öffnen (nutzt deine vorhandene openFile-Funktion)
+    nlohmann::json spieleJson = openFile(dateipfadSpieleBuli);
+
+    // 2. OpenLigaDB-Daten parsen und NUR die Bayern-Spiele extrahieren
+    std::vector<Spiel> bayernSpiele = parseBayernSpiele(spieleJson);
+
+    // 3. Testweise ausgeben
+    std::cout << "Anzahl der gefundenen Bayern-Spiele: " << bayernSpiele.size() << "\n";'*/
+
+    std::vector<Spiel> spieleSaison;
+    spieleSaison = ladeBayernSpiele(dateipfadSpieleBuli, dateipfadSpieleDfb, dateipfadSpieleUcl);
+    auto [first, last] = std::ranges::unique(spieleSaison);
+    spieleSaison.erase(first, last);
+
 
     return 0;
-}// TIP See CLion help at <a href="https://www.jetbrains.com/help/clion/">jetbrains.com/help/clion/</a>. Also, you can try interactive lessons for CLion by selecting 'Help | Learn IDE Features' from the main menu.
+}
