@@ -1,0 +1,4 @@
+*.cpp filter=pathfilter
+*.h filter=pathfilter
+*.py filter=pathfilter
+*.json filter=pathfilter

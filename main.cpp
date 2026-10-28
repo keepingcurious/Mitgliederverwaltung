@@ -8,7 +8,7 @@ using json = nlohmann::json;
 
 
 int main() {
-    const std::string dateipfad = "/Users/johannes/repos/Mitgliederverwaltung/mitglieder.json";
+    const std::string dateipfad = "__USER_HOME__/repos/Mitgliederverwaltung/mitglieder.json";
     json mitgliederJson = openFile(dateipfad);
     std::vector<Mitglied> mitglieder;
     mitglieder = mitgliederEinlesen(mitgliederJson);
@@ -16,9 +16,10 @@ int main() {
     mitgliederSchreiben(mitglieder, dateipfad);
 
 
-    const std::string dateipfadSpieleBuli = "/Users/johannes/repos/Mitgliederverwaltung/spieleBuli.json";
-    const std::string dateipfadSpieleDfb = "/Users/johannes/repos/Mitgliederverwaltung/spieleDfb.json";
-    const std::string dateipfadSpieleUcl = "/Users/johannes/repos/Mitgliederverwaltung/spieleUcl.json";
+    const std::string dateipfadSpieleBuli = "__USER_HOME__/repos/Mitgliederverwaltung/spieleBuli.json";
+    const std::string dateipfadSpieleDfb = "__USER_HOME__/repos/Mitgliederverwaltung/spieleDfb.json";
+    const std::string dateipfadSpieleUcl = "__USER_HOME__/repos/Mitgliederverwaltung/spieleUcl.json";
+
 
     /*// 1. Datei öffnen (nutzt deine vorhandene openFile-Funktion)
     nlohmann::json spieleJson = openFile(dateipfadSpieleBuli);
@@ -33,6 +34,7 @@ int main() {
     spieleSaison = ladeBayernSpiele(dateipfadSpieleBuli, dateipfadSpieleDfb, dateipfadSpieleUcl);
     auto [first, last] = std::ranges::unique(spieleSaison);
     spieleSaison.erase(first, last);
+    std::cout<<"test"<<std::endl;
 
 
     return 0;
