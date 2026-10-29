@@ -2,9 +2,9 @@ name: Build Fanclub App
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master", "Mitgliederverwaltung" ]
   pull_request:
-    branches: [ "main", "master" ]
+    branches: [ "main", "master" "Mitgliederverwaltung" ]
 
 jobs:
   build:
