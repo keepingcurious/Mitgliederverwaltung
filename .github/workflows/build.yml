@@ -8,42 +8,47 @@ on:
 
 jobs:
   build:
-    # Hier definierst du, auf welchen Betriebssystemen gebaut werden soll:
-    # macos-latest (aktuell meist Apple Silicon ARM), windows-latest (x64), ubuntu-latest (x64)
     runs-on: ${{ matrix.os }}
-    
+
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-    - name: Code auschecken
-      uses: actions/checkout@v4
+      - name: Code auschecken
+        uses: actions/checkout@v4
 
-    - name: Qt installieren (über aqtinstall - der universelle Weg für CI)
-      uses: jurplel/install-qt-action@v3
-      with:
-        version: '6.8.2'
-        host: ${{ matrix.os == 'macos-latest' && 'mac' || (matrix.os == 'windows-latest' && 'windows' || 'linux') }}
-        target: 'desktop'
-        arch: ${{ matrix.os == 'windows-latest' && 'win64_msvc2022_64' || '' }}
+      # Python explizit vorab einrichten, um den WindowsApps-Zugriffsfehler zu umgehen
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
 
-    - name: nlohmann/json installieren (unter Linux/macOS via apt/brew, Windows holt es sich oft über CMake)
-      if: runner.os == 'Linux'
-      run: sudo apt-get update && sudo apt-get install -y nlohmann-json3-dev
+      - name: Qt installieren (über aqtinstall)
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.8.2'
+          host: ${{ matrix.os == 'macos-latest' && 'mac' || (matrix.os == 'windows-latest' && 'windows' || 'linux') }}
+          target: 'desktop'
+          arch: ${{ matrix.os == 'windows-latest' && 'win64_msvc2022_64' || '' }
 
-    - name: CMake Konfiguration
-      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+      - name: nlohmann/json installieren (unter Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y nlohmann-json3-dev
 
-    - name: Projekt bauen
-      run: cmake --build build --config Release
+      - name: CMake Konfiguration
+        run: |
+          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ env.Qt5_DIR || env.Qt6_DIR || env.QT_PATH }}"
 
-    - name: Artefakte (fertige Programme) hochladen
-      uses: actions/upload-artifact@v4
-      with:
-        name: Fanclub-${{ matrix.os }}
-        path: |
-          build/Fanclub
-          build/Fanclub.exe
-          build/Release/Fanclub.exe
-        if-no-files-found: ignore
+      - name: Projekt bauen
+        run: cmake --build build --config Release
+
+      - name: Artefakte (fertige Programme) hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: Fanclub-${{ matrix.os }}
+          path: |
+            build/Fanclub
+            build/Fanclub.exe
+            build/Release/Fanclub.exe
+          if-no-files-found: ignore
