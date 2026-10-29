@@ -46,3 +46,4 @@ jobs:
           build/Fanclub
           build/Fanclub.exe
           build/Release/Fanclub.exe
+        if-no-files-found: ignore
