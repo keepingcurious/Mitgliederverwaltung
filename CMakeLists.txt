@@ -24,8 +24,8 @@ find_package(nlohmann_json REQUIRED)
 
 # 2. Quelldateien ZUERST definieren (WICHTIG!)
 set(SOURCE_FILES
-        src/Fanclub.cpp
-        src/Fanclub.hpp # falls vorhanden, sonst anpassen
+        src/fanclub.cpp
+        src/fanclub.hpp # falls vorhanden, sonst anpassen
         main.cpp
         spiele.cpp
         spiele.hpp
