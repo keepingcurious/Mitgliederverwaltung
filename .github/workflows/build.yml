@@ -1,0 +1,47 @@
+name: Build Fanclub App
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    # Hier definierst du, auf welchen Betriebssystemen gebaut werden soll:
+    # macos-latest (aktuell meist Apple Silicon ARM), windows-latest (x64), ubuntu-latest (x64)
+    runs-on: ${{ matrix.os }}
+    
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - name: Code auschecken
+      uses: actions/checkout@v4
+
+    - name: Qt installieren (über aqtinstall - der universelle Weg für CI)
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.12.0'
+        host: ${{ matrix.os == 'macos-latest' && 'mac' || (matrix.os == 'windows-latest' && 'windows' || 'linux') }}
+        target: 'desktop'
+
+    - name: nlohmann/json installieren (unter Linux/macOS via apt/brew, Windows holt es sich oft über CMake)
+      if: runner.os == 'Linux'
+      run: sudo apt-get update && sudo apt-get install -y nlohmann-json3-dev
+
+    - name: CMake Konfiguration
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Projekt bauen
+      run: cmake --build build --config Release
+
+    - name: Artefakte (fertige Programme) hochladen
+      uses: actions/upload-artifact@v4
+      with:
+        name: Fanclub-${{ matrix.os }}
+        path: |
+          build/Fanclub
+          build/Fanclub.exe
+          build/Release/Fanclub.exe

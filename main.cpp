@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <QApplication>
+#include <QPushButton>
 #include "fanclub.hpp"
 #include "nlohmann/json.hpp"
 #include "spiele.hpp"
@@ -7,7 +9,7 @@
 using json = nlohmann::json;
 
 
-int main() {
+int main(int argc, char *argv[]) {
     const std::string dateipfad = "__USER_HOME__/repos/Mitgliederverwaltung/mitglieder.json";
     json mitgliederJson = openFile(dateipfad);
     std::vector<Mitglied> mitglieder;
@@ -36,6 +38,11 @@ int main() {
     spieleSaison.erase(first, last);
     std::cout<<"test"<<std::endl;
 
+    QApplication app(argc, argv);
 
-    return 0;
+    QPushButton button("Hallo aus CLion mit Qt!");
+    button.resize(300, 100);
+    button.show();
+
+    return app.exec();
 }
