@@ -18,7 +18,6 @@ jobs:
       - name: Code auschecken
         uses: actions/checkout@v4
 
-      # Python explizit vorab einrichten, um den WindowsApps-Zugriffsfehler zu umgehen
       - name: Python einrichten
         uses: actions/setup-python@v5
         with:
@@ -30,7 +29,7 @@ jobs:
           version: '6.8.2'
           host: ${{ matrix.os == 'macos-latest' && 'mac' || (matrix.os == 'windows-latest' && 'windows' || 'linux') }}
           target: 'desktop'
-          arch: ${{ matrix.os == 'windows-latest' && 'win64_msvc2022_64' || '' }
+          arch: ${{ matrix.os == 'windows-latest' && 'win64_msvc2022_64' || '' }}
 
       - name: nlohmann/json installieren (unter Linux)
         if: runner.os == 'Linux'
