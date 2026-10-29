@@ -21,13 +21,16 @@ find_package(Qt6 REQUIRED COMPONENTS
 )
 
 find_package(nlohmann_json REQUIRED)
-include(FetchContent)
-FetchContent_Declare(
-        nlohmann_json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.3
-)
-FetchContent_MakeAvailable(nlohmann_json)
+if(NOT nlohmann_json_FOUND)
+    include(FetchContent)
+    FetchContent_Declare(
+            nlohmann_json
+            GIT_REPOSITORY https://github.com/nlohmann/json.git
+            GIT_TAG v3.11.3
+    )
+    FetchContent_MakeAvailable(nlohmann_json)
+endif()
+
 
 # 2. Quelldateien ZUERST definieren (WICHTIG!)
 set(SOURCE_FILES
