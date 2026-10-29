@@ -26,6 +26,7 @@ jobs:
         version: '6.12.0'
         host: ${{ matrix.os == 'macos-latest' && 'mac' || (matrix.os == 'windows-latest' && 'windows' || 'linux') }}
         target: 'desktop'
+        arch: ${{ matrix.os == 'windows-latest' && 'win64_msvc2019_64' || '' }}
 
     - name: nlohmann/json installieren (unter Linux/macOS via apt/brew, Windows holt es sich oft über CMake)
       if: runner.os == 'Linux'
