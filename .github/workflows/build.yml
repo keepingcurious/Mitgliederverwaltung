@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "main", "master", "Mitgliederverwaltung" ]
   pull_request:
-    branches: [ "main", "master" "Mitgliederverwaltung" ]
+    branches: [ "main", "master", "Mitgliederverwaltung" ]
 
 jobs:
   build:
