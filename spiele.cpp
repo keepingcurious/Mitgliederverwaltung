@@ -133,7 +133,15 @@ std::vector<Spiel> parseBayernSpiele(const nlohmann::json& openLigaJson) {
 
 std::vector<Spiel> ladeBayernSpiele(std::string blPfad, std::string dfbPfad, std::string uclPfad) {
     //
-    nlohmann::json spieleBuLiJson = openFile(blPfad);
+    nlohmann::json spieleBuLiJson;
+    try {
+        spieleBuLiJson = openFile(blPfad);
+    } catch (const std::exception& e) {
+        // Gibt dir den exakten Grund im GitHub-Log aus
+        std::cerr << "Fehler in openFile: " << e.what() << std::endl;
+        throw; // Oder sauber behandeln
+    }
+
 
     // 2. OpenLigaDB-Daten parsen und NUR die Bayern-Spiele extrahieren
     std::vector<Spiel> spieleBuLi = parseBayernSpiele(spieleBuLiJson);
