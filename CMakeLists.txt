@@ -37,7 +37,7 @@ set(SOURCE_FILES
 )
 
 # 4. Executable erstellen (WIN32: unter Windows ohne Konsolenfenster)
-add_executable(Fanclub WIN32 ${SOURCE_FILES})
+add_executable(Fanclub  MACOSX_BUNDLE WIN32 ${SOURCE_FILES})
 
 # 5. Include-Verzeichnisse
 target_include_directories(Fanclub PRIVATE ${PROJECT_SOURCE_DIR}/src)
