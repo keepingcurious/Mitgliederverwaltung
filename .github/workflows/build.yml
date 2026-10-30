@@ -87,4 +87,3 @@ jobs:
           name: Fanclub-${{ matrix.os }}
           path: dist/
           if-no-files-found: error
- 
