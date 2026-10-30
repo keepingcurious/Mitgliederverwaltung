@@ -8,46 +8,83 @@ on:
 
 jobs:
   build:
+    name: Build (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
 
     strategy:
+      fail-fast: false   # ein fehlgeschlagenes OS bricht die anderen nicht ab
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
+
+    defaults:
+      run:
+        shell: bash      # einheitliche Syntax auf allen Plattformen
 
     steps:
       - name: Code auschecken
         uses: actions/checkout@v4
 
-      - name: Python einrichten
+      - name: Python einrichten (für aqtinstall)
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Qt installieren (über aqtinstall)
-        uses: jurplel/install-qt-action@v3
+      - name: Qt installieren
+        uses: jurplel/install-qt-action@v4
         with:
           version: '6.8.2'
           host: ${{ matrix.os == 'macos-latest' && 'mac' || (matrix.os == 'windows-latest' && 'windows' || 'linux') }}
           target: 'desktop'
           arch: ${{ matrix.os == 'windows-latest' && 'win64_msvc2022_64' || '' }}
+          cache: true
 
-      - name: nlohmann/json installieren (unter Linux)
+      - name: Systembibliotheken für Qt installieren (Linux)
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y nlohmann-json3-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev libglu1-mesa-dev libxkbcommon-dev
+
+      # nlohmann/json wird NICHT mehr per Paketmanager installiert,
+      # sondern in der CMakeLists.txt per FetchContent geladen (siehe Hinweis).
 
       - name: CMake Konfiguration
         run: |
-          cmake -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH="${{ env.Qt5_DIR || env.Qt6_DIR || env.QT_PATH }}"
+          cmake -B build \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_PREFIX_PATH="$QT_ROOT_DIR"
 
       - name: Projekt bauen
-        run: cmake --build build --config Release
+        run: cmake --build build --config Release --parallel
+
+      # --- Programme einsammeln (inkl. Qt-Bibliotheken unter Windows) ---
+      - name: Paket zusammenstellen (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          mkdir dist
+          cp build/Release/Fanclub.exe dist/
+          windeployqt --release dist/Fanclub.exe
+
+      - name: Paket zusammenstellen (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          mkdir dist
+          cp build/Fanclub dist/
+
+      - name: Paket zusammenstellen (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir dist
+          if [ -d build/Fanclub.app ]; then
+            cp -R build/Fanclub.app dist/
+            macdeployqt dist/Fanclub.app
+          else
+            cp build/Fanclub dist/
+          fi
 
       - name: Artefakte (fertige Programme) hochladen
         uses: actions/upload-artifact@v4
         with:
           name: Fanclub-${{ matrix.os }}
-          path: |
-            build/Fanclub
-            build/Fanclub.exe
-            build/Release/Fanclub.exe
-          if-no-files-found: ignore
+          path: dist/
+          if-no-files-found: error
+ 
