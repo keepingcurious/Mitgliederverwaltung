@@ -14,7 +14,9 @@ jobs:
     strategy:
       fail-fast: false   # ein fehlgeschlagenes OS bricht die anderen nicht ab
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        # macos-15 statt macos-latest: Qt 6.8.2 linkt gegen das AGL-Framework,
+        # das im SDK von macOS 26 (= macos-latest) nicht mehr existiert.
+        os: [ubuntu-latest, windows-latest, macos-15]
 
     defaults:
       run:
@@ -33,9 +35,9 @@ jobs:
         uses: jurplel/install-qt-action@v4
         with:
           version: '6.8.2'
-          host: ${{ matrix.os == 'macos-latest' && 'mac' || (matrix.os == 'windows-latest' && 'windows' || 'linux') }}
+          host: ${{ runner.os == 'macOS' && 'mac' || (runner.os == 'Windows' && 'windows' || 'linux') }}
           target: 'desktop'
-          arch: ${{ matrix.os == 'windows-latest' && 'win64_msvc2022_64' || '' }}
+          arch: ${{ runner.os == 'Windows' && 'win64_msvc2022_64' || '' }}
           cache: true
 
       - name: Systembibliotheken für Qt installieren (Linux)
