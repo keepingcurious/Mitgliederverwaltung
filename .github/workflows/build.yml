@@ -16,7 +16,8 @@ jobs:
       matrix:
         # macos-15 statt macos-latest: Qt 6.8.2 linkt gegen das AGL-Framework,
         # das im SDK von macOS 26 (= macos-latest) nicht mehr existiert.
-        os: [ubuntu-latest, windows-latest, macos-15]
+        # ubuntu-22.04: aeltere glibc -> das AppImage laeuft auf mehr Distributionen
+        os: [ubuntu-22.04, windows-latest, macos-15]
 
     defaults:
       run:
@@ -69,19 +70,76 @@ jobs:
       - name: Paket zusammenstellen (Linux)
         if: runner.os == 'Linux'
         run: |
-          mkdir dist
-          cp build/Fanclub dist/
+          mkdir dist packaging
+          
+          # Icon: eigene Datei packaging/fanclub.png wird bevorzugt,
+          # sonst wird ein einfarbiger Platzhalter erzeugt.
+          if [ -f assets/fanclub.png ]; then
+            cp assets/fanclub.png packaging/fanclub.png
+          else
+            python3 - <<'PY'
+          import struct, zlib
+          w = h = 256
+          raw = b"".join(b"\x00" + bytes([30, 90, 200]) * w for _ in range(h))
+          def chunk(t, d):
+              c = struct.pack(">I", len(d)) + t + d
+              return c + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff)
+          png = (b"\x89PNG\r\n\x1a\n"
+                 + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0))
+                 + chunk(b"IDAT", zlib.compress(raw))
+                 + chunk(b"IEND", b""))
+          open("packaging/fanclub.png", "wb").write(png)
+          PY
+          fi
+          
+          cat > packaging/fanclub.desktop <<'EOF'
+          [Desktop Entry]
+          Type=Application
+          Name=Fanclub
+          Exec=Fanclub
+          Icon=fanclub
+          Categories=Utility;
+          Terminal=false
+          EOF
+          
+          # linuxdeploy + Qt-Plugin laden (liegen im selben Ordner)
+          cd packaging
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+          
+          # Auf den Runnern gibt es kein FUSE -> AppImages entpackt ausfuehren
+          export APPIMAGE_EXTRACT_AND_RUN=1
+          export QMAKE="$QT_ROOT_DIR/bin/qmake"
+          ./linuxdeploy-x86_64.AppImage \
+            --appdir AppDir \
+            --executable ../build/Fanclub \
+            --desktop-file fanclub.desktop \
+            --icon-file fanclub.png \
+            --plugin qt \
+            --output appimage
+          cd ..
+          
+          # Als tar.gz verpacken, damit das Ausfuehrrecht erhalten bleibt
+          tar -czf dist/Fanclub-Linux-x86_64.tar.gz -C packaging Fanclub-x86_64.AppImage
 
       - name: Paket zusammenstellen (macOS)
         if: runner.os == 'macOS'
         run: |
-          mkdir dist
-          if [ -d build/Fanclub.app ]; then
-            cp -R build/Fanclub.app dist/
-            macdeployqt dist/Fanclub.app
-          else
-            cp build/Fanclub dist/
+          if [ ! -d build/Fanclub.app ]; then
+            echo "::error::Fanclub.app fehlt - in der CMakeLists.txt MACOSX_BUNDLE beim add_executable ergaenzen"
+            exit 1
           fi
+          mkdir dist
+          cp -R build/Fanclub.app dist/
+          macdeployqt dist/Fanclub.app
+          # Ad-hoc-Signatur (Pflicht auf Apple Silicon, sonst startet die App nicht)
+          codesign --force --deep --sign - dist/Fanclub.app
+          # Als ZIP packen, damit Ausfuehrrechte erhalten bleiben
+          ditto -c -k --keepParent dist/Fanclub.app Fanclub-macOS.zip
+          rm -rf dist
+          mkdir dist
+          mv Fanclub-macOS.zip dist/
 
       - name: Artefakte (fertige Programme) hochladen
         uses: actions/upload-artifact@v4
